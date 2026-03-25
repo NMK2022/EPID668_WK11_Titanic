@@ -1,0 +1,194 @@
+---
+title: "Univariate and Bivariate Analysis"
+author: "Nita Kanney"
+date: "`r Sys.Date()`"
+format:
+  html:
+    code-overflow: wrap
+editor_options: 
+  chunk_output_type: console
+execute: 
+  fig-align: center
+---
+
+
+This code will explore the titanic dataset to help conduct future analyses on how class and gender potentially modify passenger survival.
+
+
+## LOAD PACKAGES
+
+```{r, results='hide', message=FALSE}
+
+library(dplyr)
+library(tidyverse)
+library(readxl)
+library(sjlabelled)
+library(ggplot2)
+library(cowplot)
+library(patchwork)
+library(gtsummary)
+
+```
+
+## READ IN DATA
+
+```{r}
+
+# Load clean titanic dataset from 01_DataManage_Clean.qmd file
+titanic_clean <- readRDS("Datasets/titanic_clean20262403.rds")
+dim(titanic_clean) ## 891 observations and only 8 variables as we expected
+
+```
+
+
+## UNIVARIATE PLOTS
+
+```{r, fig.width = 20, fig.height = 15}
+
+# Barplot 
+  ## Survival
+p1 <- ggplot(titanic_clean, aes(y = survival)) + 
+                      geom_bar(fill = "lightblue",
+                               color = "grey4") + 
+        coord_flip() +
+        theme_minimal() +
+        theme(axis.text = element_text(size = 22), 
+              axis.title = element_text(size = 22), 
+              plot.title = element_text(size=28, face = "bold")) +
+        labs(y = "Passenger Survival",
+             x = "Number of Passengers",
+             title = "Barplot of Passenger Survival on the Titanic")
+p1
+
+  ## Class
+p2 <- ggplot(titanic_clean, aes(y = class)) + 
+                      geom_bar(fill = "lightblue",
+                               color = "grey4") + 
+        coord_flip() +
+        theme_minimal() +
+        theme(axis.text = element_text(size = 22), 
+              axis.title = element_text(size = 22), 
+              plot.title = element_text(size=28, face = "bold")) +
+        labs(y = "Passenger Fare Class",
+             x = "Number of Passengers",
+             title = "Barplot of Passenger Fare Class on the Titanic")
+
+p2
+
+
+  ## Sex
+p3 <- ggplot(titanic_clean, aes(y = Sex)) + 
+                      geom_bar(fill = "lightblue",
+                               color = "grey4") + 
+        coord_flip() +
+        theme_minimal() +
+        theme(axis.text = element_text(size = 22), 
+              axis.title = element_text(size = 22), 
+              plot.title = element_text(size=28, face = "bold")) +
+        labs(y = "Passenger Sex",
+             x = "Number of Passengers",
+             title = "Barplot of Passenger Sex on the Titanic")
+p3
+
+## What plot types would you use if you had a numeric/continuous variable?
+
+
+# Combine plots into one figure 
+  ## Using patchwork
+p1 / p2 / p3
+
+  ## Using cowplot
+plot_grid(p1, p2, p3, ncol = 3, labels = c("A", "B", "C"), label_size = 10)
+
+```
+
+
+## UNIVARIATE TABLE
+
+```{r}
+
+# Save variable labels into data frame for table
+variable_labels <- get_label(titanic_clean)
+
+titanic_clean %>% dplyr::select("survival", "class", "Sex", "Age") %>% 
+                  tbl_summary(label = as.list(variable_labels),
+                              missing_text = "Missing",
+                              statistic = all_categorical() ~ "{n}({p}%)")
+
+```
+
+
+
+## BIVARIATE PLOTS
+
+```{r, fig.width=10, fig.height=12}
+
+# Boxplot 
+  ## Survival X Class
+bp1 <- ggplot(titanic_clean, aes(y = survival, fill = class)) + 
+            geom_bar() + 
+            scale_fill_brewer(palette = "YlOrBr") +
+        theme(axis.text = element_text(size = 22), 
+              axis.title = element_text(size = 22), 
+              plot.title = element_text(size=28, face = "bold")) +
+        labs(y = "Passenger Survival", x = "Number of Passengers",
+             title = "Barplot by Passenger Survival and Fare Class on the Titanic") +
+        theme_minimal() 
+bp1
+
+  ## Survival X Sex
+bp2 <- ggplot(titanic_clean, aes(y = survival, fill = Sex)) + 
+            geom_bar() + 
+            scale_fill_brewer(palette = "YlGnBu") +
+      theme(axis.text = element_text(size = 22), 
+            axis.title = element_text(size = 22), 
+            plot.title = element_text(size=28, face = "bold")) +
+      labs(y = "Passenger Survival",
+             x = "Number of Passengers",
+             title = "Barplot by Passenger Survival and Sex on the Titanic") +
+      theme_minimal() 
+bp2
+
+
+  ## Class X Sex
+bp3 <- ggplot(titanic_clean, aes(y = class, fill = Sex)) + 
+            geom_bar() + 
+            scale_fill_brewer(palette = "YlOrRd") +
+      theme(axis.text = element_text(size = 22), 
+              axis.title = element_text(size = 22), 
+              plot.title = element_text(size=28, face = "bold")) +
+      labs(y = "Passenger Fare Class",
+             x = "Number of Passengers",
+             title = "Barplot by Passenger Fare Class and Sex on the Titanic") +
+      theme_minimal() 
+
+bp3
+
+
+## What are some things you notice from these plots?
+
+
+# Combine plots into one figure 
+  ## Using cowplot
+plot_grid(bp1, bp2, bp3, nrow = 3, labels = c("A", "B", "C"), label_size = 10)
+
+
+```
+
+
+## BIVARIATE TABLE
+
+```{r}
+
+titanic_clean %>% dplyr::select("survival", "class", "Sex", "Age") %>% 
+                  tbl_summary(by = survival,
+                              label = as.list(variable_labels),
+                              missing_text = "Missing",
+                              statistic = all_categorical() ~ "{n}({p}%)") %>%
+                  add_p()
+
+## What do you notice about those who survived? 
+
+```
+
+

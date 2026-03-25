@@ -1,0 +1,171 @@
+---
+title: "Data Management and Cleaning"
+author: "Nita Kanney"
+date: "`r Sys.Date()`"
+format:
+  html:
+    code-overflow: wrap
+editor_options: 
+  chunk_output_type: console
+---
+
+Epidemiology Data Analyst Intern 
+
+-   Its your 1st day of your internship! You go through all the introductory requirements: Completing onboarding, chatting with other interns, and participating in team building activities.
+
+-   You now have a meeting with your intern supervisor who introduces you to the project you will be working on over the next few weeks.
+
+-   You are taking over a prior interns project who had to leave early due to personal circumstances.
+
+-   You are provided their original materials related to their work own the project.
+
+-   Your project is seeking to understand how class and sex impacted whether a passenger survived or not [No association testing just yet].
+
+## LOAD PACKAGES
+
+```{r, results='hide', message=FALSE}
+
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(dplyr)
+library(sjlabelled)
+
+```
+
+## LOAD DATASET
+
+```{r, results='hide', message=FALSE}
+
+# Read in dataset
+titanic <- read.csv("Datasets/Titanic-Dataset.csv")
+
+## Other options for reading in data depending on the format: readxl::read_xlsx, load(), readRDS(), qs::qread()
+
+```
+
+## DATA EXPLORATION
+
+```{r}
+
+# View data structure
+dim(titanic) ## 891 observations and 12 variables (this is also visible in the environment pane on the upper right)
+str(titanic) ## We have a mix of variable types, including character, integer, and numeric (Keep this in mind!)
+head(titanic) ## We can get a glimpse of our variables and how they are coded
+
+# Get variable names
+colnames(titanic)  ## We see the names of our 12 variables, which is helpful to avoid spelling mistakes and quickly see the names of variables in your dataset (Can also reference your data dictionary here to ensure these match)
+
+# Check class of variables 
+class(titanic$PassengerId)
+class(titanic$Survived)
+class(titanic$Pclass)
+class(titanic$Name)
+class(titanic$Sex)
+class(titanic$Age)
+class(titanic$SibSp)
+class(titanic$Parch)
+class(titanic$Ticket)
+class(titanic$Fare)
+class(titanic$Cabin)
+class(titanic$Embarked)
+
+## With a larger dataset, you may only want to look at variables you are interested in for that project
+
+# Get basic summaries of variables
+summary(titanic$PassengerId)
+table(titanic$Survived)
+table(titanic$Pclass)
+#table(titanic$Name)
+table(titanic$Sex)
+summary(titanic$Age)
+table(titanic$SibSp)
+table(titanic$Parch)
+#table(titanic$Ticket)
+summary(titanic$Fare)
+#table(titanic$Cabin)
+table(titanic$Embarked)
+
+
+# Check for missingness in variables of interest
+#is.na(titanic$Sex)
+#is.na(titanic$Survived)
+#is.na(titanic$Pclass)
+
+## Other potential functions here for exploring variables would be: psych, describe summarytools
+## Also, to explore other datasets that you may want to merge, change variable type for consistency & merging datasets, dplyr::left_join()
+
+```
+
+## VARIABLE FACTOR AND RECODING
+
+```{r}
+
+# Factor and recode Levels of survival (Survived: 0 = Died, 1 = Survived)
+titanic$survival <- factor(titanic$Survived, levels = c(0,1), labels = c("Died", "Survived"))
+table(titanic$survival, titanic$Survived) ## Check that our code did what we expected
+## From here, we can see that 549 passengers did not survive and 342 did (this matches our total sample size so another check that we do not have any missing observations here)
+
+
+# Rename levels of Sex
+titanic <- titanic %>% dplyr::mutate(Sex = recode_factor(Sex,
+                                                         "male" = "Male",
+                                                         "female" = "Female"))
+
+
+# Factor and Recode Levels of Class (Pclass: 1 = 1st, 2 = 2nd, 3 = 3rd)
+titanic$class <- factor(titanic$Pclass, levels = c(1,2,3), labels = c("First", "Second", "Third"))
+table(titanic$class, titanic$Pclass) ## Check that our code did what we expected
+
+```
+
+
+## SUBSET DATASET
+
+```{r}
+
+# Select columns of interest for analysis
+titanic_subset <- titanic %>% dplyr::select("PassengerId", "Survived", "class", "survival", "Pclass", "Name", "Sex", "Age")
+
+```
+
+
+## SET VARIABLE LABELS
+
+```{r}
+
+titanic_subset$PassengerId = set_label(titanic_subset$PassengerId, label = ("Passenger ID"))
+titanic_subset$survival = set_label(titanic_subset$survival, label = ("Passenger Survival"))
+titanic_subset$class = set_label(titanic_subset$class, label = ("Passenger Fare Class"))
+titanic_subset$Sex = set_label(titanic_subset$Sex, label = ("Passenger Sex"))
+titanic_subset$Age = set_label(titanic_subset$Age, label = ("Passenger Age"))
+titanic_subset$Name = set_label(titanic_subset$Name, label = ("Passenger Name"))
+
+# Check that these labels are set to the correct variable
+get_label(titanic_subset)
+
+```
+
+
+## EXPORT DATASET
+
+```{r}
+
+saveRDS(titanic_subset, "Datasets/titanic_clean20262403.rds")
+
+## Other options for saving data: write.csv, write_xlsx(), qs::qsave()
+
+```
+
+## ACKNOWLEDGMENTS
+
+```{r}
+
+## Data used for analysis and code come from: 
+## https://www.r-bloggers.com/2017/04/r-best-practices-r-you-writing-the-r-way/
+## https://www.kaggle.com/code/mrisdal/exploring-survival-on-the-titanic 
+## https://cran.r-project.org/web/packages/explore/vignettes/explore-titanic.html
+
+# Thank you to the Bakulski lab members for their continuous support in making R easier
+
+```
