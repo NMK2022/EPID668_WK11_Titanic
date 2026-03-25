@@ -14,11 +14,11 @@ Materials for the code files were obtained from publicly available tutorials (ci
 
 When I keep getting errors after running my code
 
-![](giphy/throw-computer.GIF)
+![](Visuals/giphy/throw-computer.GIF)
 
 After realizing I spelled one word wrong and now my code runs perfectly
 
-![](giphy/jack-celebrate.gif)
+![](Visuals/giphy/jack-celebrate.gif)
 
 <br>
 
@@ -68,7 +68,7 @@ In addition, the following packages were installed via the console in R Studio:
 * How does survival differ by passenger class and sex?
 
   
-![](giphy/class-titanic.gif)
+![](Visuals/giphy/class-titanic.gif)
 
 ##
 
