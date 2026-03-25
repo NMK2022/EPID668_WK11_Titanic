@@ -4,7 +4,7 @@
 
 This project was created for UMICH SPH EPID 668 WK11 Course March 27, 2026. Helping students prepare for data management and creating reproducible code. It uses the Titanic dataset included with base R. 
 
-![](giphy/jack-rose-iconic.gif)
+![](visuals/giphy/jack-rose-iconic.gif)
 
 Materials for the code files were obtained from publicly available tutorials (cited below and in the code).
 
