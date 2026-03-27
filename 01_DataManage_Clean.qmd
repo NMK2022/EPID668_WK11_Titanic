@@ -9,17 +9,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-Epidemiology Data Analyst Intern 
-
--   Its your 1st day of your internship! You go through all the introductory requirements: Completing onboarding, chatting with other interns, and participating in team building activities.
-
--   You now have a meeting with your intern supervisor who introduces you to the project you will be working on over the next few weeks.
-
--   You are taking over a prior interns project who had to leave early due to personal circumstances.
-
--   You are provided their original materials related to their work own the project.
-
--   Your project is seeking to understand how class and sex impacted whether a passenger survived or not [No association testing just yet].
 
 ## LOAD PACKAGES
 
@@ -30,6 +19,7 @@ library(readxl)
 library(writexl)
 library(dplyr)
 library(sjlabelled)
+library(ggplot2)
 
 ```
 
